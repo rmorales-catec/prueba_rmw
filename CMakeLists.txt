@@ -18,15 +18,15 @@ find_package(std_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 
 
-add_executable(image_publisher_QoS_compressed src/image_publisher_QoS_compressed.cpp)
-ament_target_dependencies(image_publisher_QoS_compressed rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
+add_executable(image_publisher_compressed src/image_publisher_compressed.cpp)
+ament_target_dependencies(image_publisher_compressed rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
 
-add_executable(image_subscriber_QoS_compressed src/image_subscriber_QoS_compressed.cpp)
-ament_target_dependencies(image_subscriber_QoS_compressed rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
+add_executable(image_subscriber_compressed src/image_subscriber_compressed.cpp)
+ament_target_dependencies(image_subscriber_compressed rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
 
 install (TARGETS
-  image_publisher_QoS_compressed
-  image_subscriber_QoS_compressed
+  image_publisher_compressed
+  image_subscriber_compressed
   DESTINATION lib/${PROJECT_NAME}
 )
 
