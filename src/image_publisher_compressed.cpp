@@ -39,9 +39,9 @@ private:
   //Creamos una función con la que enviaremos la imagen al topic /image
   void timer_callback()
   {
-    auto message = std_msgs::msg::String();
-    message.data = std::to_string(count_++);
-    RCLCPP_INFO(this->get_logger(), "'%s'", message.data.c_str());
+    // auto message = std_msgs::msg::String();
+    // message.data = std::to_string(count_++);
+    // RCLCPP_INFO(this->get_logger(), "'%s'", message.data.c_str());
     // publisher_1->publish(message);
 
 
@@ -68,7 +68,7 @@ private:
       // Publicar la imagen
       publisher_->publish(ros_image);
 
-      RCLCPP_INFO(this->get_logger(), "Publicando imagen #%d", count_2++);
+      // RCLCPP_INFO(this->get_logger(), "Publicando imagen #%d", count_2++);
     } 
     catch (const cv_bridge::Exception &e) {
       RCLCPP_ERROR(this->get_logger(), "Error al convertir la imagen: %s", e.what());

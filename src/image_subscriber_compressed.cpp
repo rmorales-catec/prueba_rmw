@@ -24,9 +24,9 @@ public:
 private:
     void topic_callback(const sensor_msgs::msg::CompressedImage::SharedPtr msg)
     {
-        auto message = std_msgs::msg::String();
-        message.data = std::to_string(count_++);
-        RCLCPP_INFO(this->get_logger(), "'%s'", message.data.c_str());
+        // auto message = std_msgs::msg::String();
+        // message.data = std::to_string(count_++);
+        // RCLCPP_INFO(this->get_logger(), "'%s'", message.data.c_str());
 
         try{
             // Convertir los datos del mensaje a un cv::Mat
