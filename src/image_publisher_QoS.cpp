@@ -1,29 +1,32 @@
 #include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/compressed_image.hpp>
+#include <sensor_msgs/msg/image.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <rclcpp/qos.hpp>
 #include <string>
 #include <chrono>
+
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 
+/* Declaramos la clase que va a publicar la imagen en el topic /image */
 
 class ImagePublisher : public rclcpp::Node
 {
 public: 
   ImagePublisher()
-  : Node("image_publisher_qos")
+  : Node("image_publisher_qos")  //Declaramos el nombre del nodo e inicializamos un contador
   {
     auto image_qos = rclcpp::SystemDefaultsQoS();
+    // auto image_qos = rclcpp::SensorDataQoS();
       
     //Definimos el publisher, declaramos el tipo de mensaje, el topic en el que vamos a publicar
-    publisher_=this->create_publisher<sensor_msgs::msg::CompressedImage>("image_compressed", image_qos); 
-    capture_.open(0);
+    publisher_=this->create_publisher<sensor_msgs::msg::Image>("image", image_qos); 
+    capture_.open(0);  // Para usar la cámara por defecto
     if (!capture_.isOpened()) {
       RCLCPP_ERROR(this->get_logger(), "No se pudo abrir la cámara.");
     }
     capture_.set(cv::CAP_PROP_FPS, 30);
-
+    
     //Creamos un timer para enviar imágenes a ~30fps
     timer_=this->create_wall_timer(
         std::chrono::milliseconds(33), std::bind(&ImagePublisher::timer_callback, this));
@@ -41,21 +44,12 @@ private:
       return;
     }
 
-    try { 
-      // Comprimir imagen en formato JPEG
-      std::vector<uint8_t> buffer;
-      std::vector<int> compression_params = {cv::IMWRITE_JPEG_QUALITY, 90}; 
-      cv::imencode(".jpg", frame, buffer, compression_params);
-
-      // Crear mensaje CompressedImage
-      auto ros_image = sensor_msgs::msg::CompressedImage();
-      ros_image.header.stamp = this->get_clock()->now();
-      ros_image.format = "jpeg";
-      ros_image.data = buffer; 
-
-      // Publicar la imagen
-      publisher_->publish(ros_image);
-
+    try {  //intentamos convertir imagen y en caso de que no se pueda publicamos un mensaje de error 
+      // Convertir la imagen de OpenCV (cv::Mat) a sensor_msgs::msg::Image
+      auto ros_image = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", frame).toImageMsg();
+      ros_image->header.stamp = this->get_clock()->now();
+      // Publicar la imagen en el tópico "image"
+      publisher_->publish(*ros_image);
     } 
     catch (const cv_bridge::Exception &e) {
       RCLCPP_ERROR(this->get_logger(), "Error al convertir la imagen: %s", e.what());
@@ -63,7 +57,7 @@ private:
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
   cv::VideoCapture capture_;
 };
 

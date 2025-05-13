@@ -24,7 +24,15 @@ ament_target_dependencies(image_publisher_compressed rclcpp sensor_msgs cv_bridg
 add_executable(image_subscriber_compressed src/image_subscriber_compressed.cpp)
 ament_target_dependencies(image_subscriber_compressed rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
 
+add_executable(image_publisher src/image_publisher_QoS.cpp)
+ament_target_dependencies(image_publisher rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
+
+add_executable(image_subscriber src/image_subscriber_QoS.cpp)
+ament_target_dependencies(image_subscriber rclcpp sensor_msgs cv_bridge OpenCV std_msgs)
+
 install (TARGETS
+  image_publisher
+  image_subscriber
   image_publisher_compressed
   image_subscriber_compressed
   DESTINATION lib/${PROJECT_NAME}
